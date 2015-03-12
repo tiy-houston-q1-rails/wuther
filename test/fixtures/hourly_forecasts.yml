@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  city_id: 
+  datetime: 2015-03-12 10:15:49
+  temp: 9.99
+  precip_probability: 9.99
+
+two:
+  city_id: 
+  datetime: 2015-03-12 10:15:49
+  temp: 9.99
+  precip_probability: 9.99

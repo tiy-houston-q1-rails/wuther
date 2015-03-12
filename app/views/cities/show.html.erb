@@ -1,0 +1,21 @@
+<h1><%= @city.name %></h1>
+<table>
+  <thead>
+    <tr>
+      <th>When</th>
+      <th>Temp</th>
+      <th>Rain?</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <% @city.hourly_forecasts.each do |forecast| %>
+      <tr>
+        <td><%= forecast.datetime.strftime("%A, %d %b %Y %l:%M %p") %></td>
+        <td><%= forecast.temperature.round(0) %></td>
+        <td><%= number_to_percentage forecast.precip_probability * 100, precision: 0 %></td>
+      </tr>
+    <% end %>
+
+  </tbody>
+</table>
