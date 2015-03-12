@@ -1,4 +1,8 @@
 <h1><%= @city.name %></h1>
+
+<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+
 <table>
   <thead>
     <tr>
@@ -10,12 +14,54 @@
   <tbody>
 
     <% @city.hourly_forecasts.each do |forecast| %>
-      <tr>
-        <td><%= forecast.datetime.strftime("%A, %d %b %Y %l:%M %p") %></td>
-        <td><%= forecast.temperature.round(0) %></td>
-        <td><%= number_to_percentage forecast.precip_probability * 100, precision: 0 %></td>
+      <tr >
+        <td ><%= forecast.datetime.strftime("%A, %d %b %Y %l:%M %p") %></td>
+        <td ><%= forecast.temperature.round(0) %></td>
+        <td ><%= number_to_percentage forecast.precip_probability * 100, precision: 0 %></td>
       </tr>
     <% end %>
 
+
   </tbody>
 </table>
+
+<script>
+$(function () {
+    $('#container').highcharts({
+        title: {
+            text: 'Hourly  Temperature forecast',
+            x: -20 //center
+        },
+        subtitle: {
+            text: 'Source: Wuther',
+            x: -20
+        },
+        xAxis: {
+            categories: [<%= @city.hourly_forecasts.map(&:datetime).map{|time| "\"#{time.strftime("%m/%d/%Y %H:%M")}\""}.join(", ").html_safe%>]
+        },
+        yAxis: {
+            title: {
+                text: 'Temperature (°C)'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '°C'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [{
+            name: '<%= @city.name %>',
+            data: [<%= @city.hourly_forecasts.map(&:temperature).join(", ")%>]
+        }, ]
+    });
+});
+</script>
