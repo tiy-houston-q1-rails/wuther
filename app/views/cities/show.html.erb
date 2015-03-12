@@ -13,7 +13,7 @@
   </thead>
   <tbody>
 
-    <% @city.hourly_forecasts.each do |forecast| %>
+    <% @city.hourly_forecasts.sort_by(&:datetime).each do |forecast| %>
       <tr >
         <td ><%= forecast.datetime.strftime("%A, %d %b %Y %l:%M %p") %></td>
         <td ><%= forecast.temperature.round(0) %></td>
@@ -50,7 +50,7 @@ $(function () {
             }]
         },
         tooltip: {
-            valueSuffix: '°C'
+            valueSuffix: '°F'
         },
         legend: {
             layout: 'vertical',
@@ -60,7 +60,25 @@ $(function () {
         },
         series: [{
             name: '<%= @city.name %>',
-            data: [<%= @city.hourly_forecasts.map(&:temperature).join(", ")%>]
+            data: [
+              <% @city.hourly_forecasts.sort_by(&:datetime).map do |forecast| %>
+                {
+                  y: <%= forecast.temperature %>,
+                  marker: {
+                    <%
+                      if forecast.precip_probability > 0.05
+                        symbol = 'http://icons.iconarchive.com/icons/custom-icon-design/weather/32/rain-icon.png'
+                      elsif night_time?(forecast.datetime)
+                        symbol = 'http://icons.iconarchive.com/icons/custom-icon-design/lovely-weather-2/32/Moon-icon.png'
+                      else
+                        symbol = 'http://www.highcharts.com/demo/gfx/sun.png'
+                      end
+                    %>
+                    symbol: 'url(<%= symbol%>)'
+                  }
+                } <%= ',' unless forecast == @city.hourly_forecasts.sort_by(&:datetime).last %>
+              <% end %>
+            ]
         }, ]
     });
 });

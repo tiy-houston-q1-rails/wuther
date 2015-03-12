@@ -5,3 +5,69 @@
     <li><%= link_to city.name, city %></li>
   <% end %>
 </ul>
+
+
+<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+<script>
+$(function () {
+    $('#container').highcharts({
+        title: {
+            text: 'Hourly  Temperature forecast',
+            x: -20 //center
+        },
+        subtitle: {
+            text: 'Source: Wuther',
+            x: -20
+        },
+        xAxis: {
+            categories: [<%= @cities.first.hourly_forecasts.map(&:datetime).map{|time| "\"#{time.strftime("%m/%d/%Y %H:%M")}\""}.join(", ").html_safe%>]
+        },
+        yAxis: {
+            title: {
+                text: 'Temperature (°C)'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '°F'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [
+          <% @cities.each do |city| %>
+          {
+            name: '<%= city.name %>',
+            data: [
+              <% city.hourly_forecasts.sort_by(&:datetime).map do |forecast| %>
+                {
+                  y: <%= forecast.temperature %>,
+                  marker: {
+                    <%
+                      if forecast.precip_probability > 0.05
+                        symbol = 'http://icons.iconarchive.com/icons/custom-icon-design/weather/32/rain-icon.png'
+                      elsif night_time?(forecast.datetime)
+                        symbol = 'http://icons.iconarchive.com/icons/custom-icon-design/lovely-weather-2/32/Moon-icon.png'
+                      else
+                        symbol = 'http://www.highcharts.com/demo/gfx/sun.png'
+                      end
+                    %>
+                    symbol: 'url(<%= symbol%>)'
+                  }
+                } <%= ',' unless forecast == city.hourly_forecasts.sort_by(&:datetime).last %>
+              <% end %>
+            ]
+        },
+        <% end %>
+      ]
+    });
+});
+</script>
