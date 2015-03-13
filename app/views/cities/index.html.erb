@@ -21,7 +21,7 @@ $(function () {
             x: -20
         },
         xAxis: {
-            categories: [<%= @cities.first.hourly_forecasts.map(&:datetime).map{|time| "\"#{time.strftime("%m/%d/%Y %H:%M")}\""}.join(", ").html_safe%>]
+            categories: [<%= @cities.first.forecasts.map(&:datetime).map{|time| "\"#{time.strftime("%m/%d/%Y %H:%M")}\""}.join(", ").html_safe%>]
         },
         yAxis: {
             title: {
@@ -47,7 +47,7 @@ $(function () {
           {
             name: '<%= city.name %>',
             data: [
-              <% city.hourly_forecasts.sort_by(&:datetime).map do |forecast| %>
+              <% city.forecasts.sort_by(&:datetime).map do |forecast| %>
                 {
                   y: <%= forecast.temperature %>,
                   marker: {
@@ -62,7 +62,7 @@ $(function () {
                     %>
                     symbol: 'url(<%= symbol%>)'
                   }
-                } <%= ',' unless forecast == city.hourly_forecasts.sort_by(&:datetime).last %>
+                } <%= ',' unless forecast == city.forecasts.sort_by(&:datetime).last %>
               <% end %>
             ]
         },

@@ -13,7 +13,7 @@
   </thead>
   <tbody>
 
-    <% @city.hourly_forecasts.sort_by(&:datetime).each do |forecast| %>
+    <% @city.forecasts.each do |forecast| %>
       <tr >
         <td ><%= forecast.datetime.strftime("%A, %d %b %Y %l:%M %p") %></td>
         <td ><%= forecast.temperature.round(0) %></td>
@@ -37,7 +37,7 @@ $(function () {
             x: -20
         },
         xAxis: {
-            categories: [<%= @city.hourly_forecasts.map(&:datetime).map{|time| "\"#{time.strftime("%m/%d/%Y %H:%M")}\""}.join(", ").html_safe%>]
+            categories: [<%= @city.forecasts.map(&:datetime).map{|time| "\"#{time.strftime("%m/%d/%Y %H:%M")}\""}.join(", ").html_safe%>]
         },
         yAxis: {
             title: {
@@ -61,7 +61,8 @@ $(function () {
         series: [{
             name: '<%= @city.name %>',
             data: [
-              <% @city.hourly_forecasts.sort_by(&:datetime).map do |forecast| %>
+              <% @city.forecasts.map do |forecast| %>
+
                 {
                   y: <%= forecast.temperature %>,
                   marker: {
@@ -76,7 +77,7 @@ $(function () {
                     %>
                     symbol: 'url(<%= symbol%>)'
                   }
-                } <%= ',' unless forecast == @city.hourly_forecasts.sort_by(&:datetime).last %>
+                } <%= ',' unless forecast == @city.forecasts.sort_by(&:datetime).last %>
               <% end %>
             ]
         }, ]

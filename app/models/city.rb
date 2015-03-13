@@ -12,4 +12,8 @@ class City < ActiveRecord::Base
 
   end
 
+  def forecasts
+    hourly_forecasts.future
+  end
+
 end
